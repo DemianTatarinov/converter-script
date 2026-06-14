@@ -1,13 +1,9 @@
-How do I polish?
-
-Теперь этот скрипт — ваш личный автономный конвертер.
-
-You can copy and paste here convert_heic.sh in your favorite place, here you go photography by iPhone.
-
-Открыть терминал в этой папке (или дойти до неё через cd) и запустить его command:
+How do I convert?
+This script is now your personal standalone converter.
+You can copy and paste `convert_heic.sh` into your preferred location, and there you have it: photos from your iPhone.
+Open a terminal in this folder (or navigate to it using `cd`) and run the command:
 
 Bash
-
 ./convert_heic.sh
 
-Script itself поймет, где он находится, найдет photography, delete JPEG, proverit y размер, sozmet тяжелые кадры до < 4.5 МБ и удалит исходные .heic.
+The script will automatically detect its location, locate the photos, delete the JPEGs, check the file sizes, resize large images to under 4.5 MB, and delete the original .heic files.
