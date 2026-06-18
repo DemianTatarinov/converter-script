@@ -1,23 +1,37 @@
 #!/bin/bash
-set -euo pipefail
+# Отключаем мгновенное падение при ошибках, чтобы увидеть их текст
+set -uo pipefail
 
-# Автоматически создаем уникальное имя папки по дате и времени
-FOLDER_NAME="backup_$(date +%F_%H-%M)"
+count=0
 
-echo "--> Создается новая папка: $FOLDER_NAME"
-mkdir -p "$FOLDER_NAME"
+# Сортировка файлов
+for file in *; do
+    [ -f "$file" ] || continue
+    [ "$file" != "$(basename "$0")" ] || continue
 
-# Переносим все файлы текущего уровня внутрь этой папки (кроме скрипта и скрытых)
-find . -maxdepth 1 -type f ! -name "$(basename "$0")" ! -name ".*" -exec mv {} "$FOLDER_NAME/" \;
+    filename="${file%.*}"
+    mkdir -p "$filename"
+    mv "$file" "$filename/"
+    ((count++))
+done
 
-# Авто-отправка в твой репозиторий Bash-Fedora
+if [ "$count" -eq 0 ]; then
+    echo "Нет файлов для переноса."
+    exit 0
+fi
+
 echo "--> Индексация файлов в Git..."
 git add .
 
 echo "--> Создание коммита..."
-git commit -m "Авто-пуш: создана папка $FOLDER_NAME"
+git commit -m "Авто-пуш: файлы разложены по персональным папкам ($count шт.)"
 
 echo "--> Отправка на GitHub..."
-git push
-
-echo "🚀 Всё готово! Файлы в репозитории Bash-Fedora!"
+# Запускаем push и смотрим, что пойдет не так
+if git push; then
+    echo "🚀 Всё готово! Успешно отправлено файлов: $count"
+else
+    echo "❌ Ошибка: git push не сработал!"
+    echo "Выполняем принудительную связку веток на случай, если они слетели..."
+    git push -u origin main
+fi
